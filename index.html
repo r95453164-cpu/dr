@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>С Днём Рождения, Юля!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden; background: #000;
+    font-family: 'Unbounded', 'Segoe UI', Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* ===== СТАРТ ===== */
+  #startBtn {
+    position: fixed; inset: 0;
+    background: #000; border: none; color: #fff;
+    z-index: 500; cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 28px; font-family: inherit;
+    font-size: 15px; letter-spacing: 1.5px;
+    transition: opacity 0.8s ease;
+    padding: 20px; text-align: center;
+  }
+  #startBtn.hide { opacity: 0; pointer-events: none; }
+  #startBtn .dot {
+    width: 22px; height: 22px;
+    background: #fff; border-radius: 50%;
+    box-shadow: 0 0 25px #7ec8ff, 0 0 50px #7ec8ff, 0 0 80px #4a90e2;
+    animation: dotPulseBig 1.8s ease-in-out infinite;
+  }
+  @keyframes dotPulseBig {
+    0%,100% { transform: scale(1);   opacity: 0.7; }
+    50%     { transform: scale(1.7); opacity: 1;   }
+  }
+
+  /* ===== ИНТРО ===== */
+  #intro {
+    position: fixed; inset: 0; background: #000;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; transition: opacity 1.2s ease;
+  }
+  #intro.hide { opacity: 0; pointer-events: none; }
+  #introDot {
+    position: absolute;
+    width: 14px; height: 14px;
+    background: #fff; border-radius: 50%;
+    box-shadow: 0 0 30px #7ec8ff, 0 0 60px #7ec8ff;
+    opacity: 0; transform: scale(0);
+  }
+  #number {
+    font-size: clamp(120px, 35vw, 320px);
+    font-weight: 900; color: #fff;
+    text-shadow: 0 0 40px rgba(126,200,255,0.9);
+    letter-spacing: 4px;
+    opacity: 0; transform: scale(0.7);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  /* ===== ФОН ===== */
+  #slides {
+    position: fixed; inset: 0;
+    background: linear-gradient(-45deg, #0a1a3a, #1e3c72, #2a5298, #4a90e2, #7ec8ff, #1e3c72);
+    background-size: 400% 400%;
+    animation: gradientShift 18s ease infinite;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    display: flex; flex-direction: column;
+    align-items: center;
+    padding: 5vh 4vw 13vh;
+    overflow: hidden;
+  }
+  #slides.active { opacity: 1; }
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  #slides .orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(60px); pointer-events: none;
+    opacity: 0.55; will-change: transform;
+  }
+  #slides .orb.o1 {
+    width: 45vw; height: 45vw;
+    background: #7ec8ff; top: -15vw; left: -15vw;
+    animation: float1 14s ease-in-out infinite;
+  }
+  #slides .orb.o2 {
+    width: 40vw; height: 40vw;
+    background: #4a90e2; bottom: -12vw; right: -12vw;
+    animation: float2 16s ease-in-out infinite;
+  }
+  #slides .orb.o3 {
+    width: 30vw; height: 30vw;
+    background: #a8d8ff; top: 40%; left: 55%;
+    animation: float3 20s ease-in-out infinite;
+    opacity: 0.35;
+  }
+  @keyframes float1 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50%     { transform: translate(8vw, 6vw) scale(1.15); }
+  }
+  @keyframes float2 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50%     { transform: translate(-7vw, -5vw) scale(1.2); }
+  }
+  @keyframes float3 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50%     { transform: translate(-10vw, 8vw) scale(0.85); }
+  }
+  #slides .star {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: #fff; border-radius: 50%;
+    box-shadow: 0 0 8px #fff;
+    opacity: 0;
+    animation: twinkle 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0; transform: scale(0.5); }
+    50%     { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* ===== ТЕКСТ ===== */
+  #text {
+    position: relative; z-index: 2;
+    width: 100%; max-width: 950px;
+    min-height: 22vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; color: #fff;
+    font-size: clamp(18px, 4vw, 32px);
+    font-weight: 700; line-height: 1.4;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 25px rgba(0,0,0,0.55), 0 0 40px rgba(126,200,255,0.5);
+    padding: 0 10px; flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  #text .char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8) rotate(-5deg);
+    transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: pre;
+  }
+  #text .char.show {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+
+  /* ===== КАРТИНКА ===== */
+  #imageWrap {
+    position: relative;
+    z-index: 2;
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+  #image {
+    max-width: 75vw;
+    max-height: 42vh;
+    object-fit: contain;
+    border-radius: 18px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 50px rgba(126,200,255,0.45);
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+    transition: opacity 1s ease, transform 1s cubic-bezier(0.34,1.56,0.64,1);
+    display: none;
+  }
+  #image.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    animation: floatImg 6s ease-in-out infinite 1s;
+  }
+  @keyframes floatImg {
+    0%,100% { transform: translateY(0) scale(1); }
+    50%     { transform: translateY(-12px) scale(1); }
+  }
+
+  /* ===== ФИНАЛ ===== */
+  #final {
+    position: relative; z-index: 3;
+    width: 100%; max-width: 900px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-top: auto;
+  }
+  #final.show { display: flex; animation: fadeUp 0.8s ease both; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  #final .fbtn {
+    background: rgba(255,255,255,0.14);
+    border: 1.5px solid rgba(255,255,255,0.45);
+    color: #fff;
+    padding: 16px 32px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.25s ease;
+    letter-spacing: 0.5px;
+    box-shadow: 0 8px 30px rgba(126,200,255,0.3);
+  }
+  #final .fbtn:hover { background: rgba(255,255,255,0.28); }
+  #final .fbtn:active { transform: scale(0.94); }
+
+  #final .timer {
+    font-size: 12px;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.5px;
+    font-weight: 400;
+    text-align: center;
+    background: rgba(0,0,0,0.25);
+    padding: 8px 16px;
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+  }
+
+  /* ===== ВИЗУАЛИЗАТОР ===== */
+  #visualizer {
+    position: fixed;
+    bottom: 0; left: 0;
+    width: 100%; height: 80px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 3px;
+    padding: 0 8px 6px;
+    z-index: 15;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+    mask-image: linear-gradient(to top, #000 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, #000 70%, transparent 100%);
+  }
+  #visualizer.active { opacity: 1; }
+  #visualizer .bar {
+    flex: 1;
+    min-width: 2px; max-width: 12px;
+    height: 4px;
+    border-radius: 4px 4px 2px 2px;
+    background: linear-gradient(to top, #4a90e2 0%, #7ec8ff 50%, #ffffff 100%);
+    box-shadow: 0 0 10px rgba(126,200,255,0.7), 0 0 20px rgba(74,144,226,0.5);
+    transition: height 0.08s linear;
+    will-change: height;
+  }
+
+  /* ===== ТОЧКИ ===== */
+  #dots {
+    position: fixed; bottom: 11vh; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 10px;
+    z-index: 20; opacity: 0;
+    transition: opacity 1s ease;
+  }
+  #dots.active { opacity: 1; }
+  #dots .dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    transition: background 0.4s, transform 0.4s;
+  }
+  #dots .dot.active {
+    background: #fff; transform: scale(1.4);
+    box-shadow: 0 0 12px #7ec8ff;
+  }
+
+  /* ===== ПОДСКАЗКА ===== */
+  #hint {
+    position: fixed; bottom: 14vh; left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.75);
+    font-size: 12px; letter-spacing: 1px;
+    z-index: 20; opacity: 0;
+    transition: opacity 0.8s ease;
+    animation: hintBlink 2s ease-in-out infinite;
+    pointer-events: none; white-space: nowrap;
+    font-weight: 400;
+  }
+  #hint.active { opacity: 1; }
+  @keyframes hintBlink {
+    0%,100% { opacity: 0.35; }
+    50%     { opacity: 0.9; }
+  }
+
+  /* ===== ЭФФЕКТЫ ===== */
+  .confetti {
+    position: fixed;
+    width: 10px; height: 14px;
+    z-index: 999;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+  .rocket {
+    position: fixed;
+    width: 4px; height: 14px;
+    background: #fff;
+    border-radius: 2px;
+    z-index: 998;
+    pointer-events: none;
+    box-shadow: 0 0 12px #7ec8ff, 0 0 20px #4a90e2;
+  }
+  .spark {
+    position: fixed;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    z-index: 999;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+
+  @media (max-width: 600px) {
+    #slides { padding: 4vh 4vw 14vh; }
+    #image { max-width: 90vw; max-height: 36vh; }
+    #text { min-height: 20vh; font-size: clamp(15px, 4.3vw, 21px); }
+    #hint { font-size: 11px; bottom: 16vh; }
+    #dots { bottom: 13vh; }
+    #visualizer { height: 60px; }
+    #final .fbtn { font-size: 13px; padding: 12px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<button id="startBtn" aria-label="Начать">
+  <div class="dot"></div>
+  <div>Нажми, чтобы открыть поздравление</div>
+</button>
+
+<div id="intro">
+  <div id="introDot"></div>
+  <div id="number">11</div>
+</div>
+
+<div id="slides">
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
+
+  <div id="text"></div>
+
+  <div id="imageWrap">
+    <img id="image" alt="">
+  </div>
+
+  <div id="final">
+    <button class="fbtn" id="fireworksBtn">🎆 Запустить салют</button>
+    <div class="timer" id="timer">⏳ Считаю...</div>
+  </div>
+</div>
+
+<div id="visualizer"></div>
+
+<div id="dots"></div>
+<div id="hint">Тапни, чтобы продолжить →</div>
+
+<audio id="music" loop preload="auto" crossorigin="anonymous" src="music.mp3"></audio>
+
+<script>
+// ================== НАСТРОЙКИ ==================
+const slides = [
+  { text: "Привет, Юль! Поздравляю тебя с твоим ДР! Теперь ты чуть взрослее, но ебланка та же", img: "img1.jpg" },
+  { text: "Желаю всего наилучшего в жизни и везде", img: "img2.jpg" },
+  { text: "Также будь умней всех и не обращай на тех внимания, кто тебе говорит херь за спиной", img: "img3.jpg" },
+  { text: "Поздравляю ещё раз! Дальше можешь в лс)", img: "img4.jpg" },
+  { text: "Спасибо, что досмотрела до конца 💙", img: null, final: true }
+];
+
+const CHAR_DELAY = 45;
+const SOUND_ON_CHAR = true;
+const BDAY_MONTH = 8;   // 8 = сентябрь
+const BDAY_DAY   = 27;
+const MUSIC_VOLUME = 0.6;
+// ===============================================
+
+const startBtn  = document.getElementById('startBtn');
+const intro     = document.getElementById('intro');
+const introDot  = document.getElementById('introDot');
+const numberEl  = document.getElementById('number');
+const slidesEl  = document.getElementById('slides');
+const textEl    = document.getElementById('text');
+const imageEl   = document.getElementById('image');
+const dotsEl    = document.getElementById('dots');
+const hintEl    = document.getElementById('hint');
+const music     = document.getElementById('music');
+const finalEl   = document.getElementById('final');
+const timerEl   = document.getElementById('timer');
+const visualizerEl = document.getElementById('visualizer');
+
+let currentSlide = 0;
+let locked = true;
+
+// Проверки в консоли
+music.addEventListener('loadeddata', () => console.log('✅ Музыка загружена'));
+music.addEventListener('error', () => console.log('❌ Музыка НЕ найдена — проверь music.mp3 рядом с index.html'));
+
+// ---------- Звёзды ----------
+(function spawnStars(count = 35) {
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top  = Math.random() * 100 + '%';
+    s.style.animationDelay = (Math.random() * 3) + 's';
+    s.style.animationDuration = (2 + Math.random() * 3) + 's';
+    const size = 2 + Math.random() * 3;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    slidesEl.appendChild(s);
+  }
+})();
+
+// ---------- Звук на символ ----------
+let audioCtx = null;
+function initAudio() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  } catch (e) {}
+}
+function playCharSound() {
+  if (!SOUND_ON_CHAR || !audioCtx) return;
+  try {
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(700 + Math.random() * 300, t);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.08, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + 0.1);
+  } catch (e) {}
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ---------- ВИЗУАЛИЗАТОР ----------
+let analyser = null;
+let visualizerBars = [];
+const BAR_COUNT = 48;
+let visualizerRunning = false;
+let realAudioWorking = false;
+
+function buildVisualizer() {
+  visualizerEl.innerHTML = '';
+  visualizerBars = [];
+  for (let i = 0; i < BAR_COUNT; i++) {
+    const b = document.createElement('div');
+    b.className = 'bar';
+    visualizerEl.appendChild(b);
+    visualizerBars.push(b);
+  }
+}
+buildVisualizer();
+
+function setupRealVisualizer() {
+  try {
+    initAudio();
+    if (!audioCtx) return false;
+    if (!music._src) {
+      const source = audioCtx.createMediaElementSource(music);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 128;
+      analyser.smoothingTimeConstant = 0.75;
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      music._src = source;
+    }
+    realAudioWorking = true;
+    return true;
+  } catch (e) {
+    console.log('⚠️ Визуализатор: фейковый режим');
+    return false;
+  }
+}
+
+const freqData = new Uint8Array(64);
+
+function animateReal() {
+  if (!analyser || !visualizerRunning) return;
+  analyser.getByteFrequencyData(freqData);
+  for (let i = 0; i < BAR_COUNT; i++) {
+    const idx = Math.floor(Math.pow(i / BAR_COUNT, 1.4) * freqData.length);
+    const val = freqData[idx] || 0;
+    const h = Math.max(3, (val / 255) * 100);
+    visualizerBars[i].style.height = h + '%';
+  }
+  requestAnimationFrame(animateReal);
+}
+
+function animateFake() {
+  if (!visualizerRunning) return;
+  const t = performance.now() / 280;
+  for (let i = 0; i < BAR_COUNT; i++) {
+    const base = Math.sin(t + i * 0.42) * 0.5 + 0.5;
+    const base2 = Math.sin(t * 1.7 + i * 0.2) * 0.3 + 0.3;
+    const noise = Math.random() * 0.25;
+    const h = Math.max(4, Math.min(100, (base * 0.5 + base2 * 0.4 + noise) * 100));
+    visualizerBars[i].style.height = h + '%';
+  }
+  requestAnimationFrame(animateFake);
+}
+
+function startVisualizer() {
+  visualizerEl.classList.add('active');
+  visualizerRunning = true;
+  if (realAudioWorking) animateReal();
+  else animateFake();
+}
+
+// ---------- ИНТРО ----------
+async function runIntro() {
+  introDot.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+  introDot.style.opacity = '1';
+  introDot.style.transform = 'scale(1)';
+  await sleep(300);
+  introDot.style.transform = 'scale(1.4)';
+  await sleep(300);
+  introDot.style.transform = 'scale(1)';
+  await sleep(700);
+  introDot.style.opacity = '0';
+  introDot.style.transform = 'scale(0)';
+  await sleep(400);
+
+  numberEl.textContent = '11';
+  numberEl.style.opacity = '1';
+  numberEl.style.transform = 'scale(1)';
+  await sleep(1000);
+
+  numberEl.style.opacity = '0';
+  numberEl.style.transform = 'scale(0.6)';
+  await sleep(400);
+  numberEl.textContent = '12';
+  numberEl.style.opacity = '1';
+  numberEl.style.transform = 'scale(1.15)';
+  await sleep(250);
+  numberEl.style.transform = 'scale(1)';
+  await sleep(1000);
+
+  intro.classList.add('hide');
+  await sleep(1200);
+  intro.style.display = 'none';
+
+  slidesEl.classList.add('active');
+  dotsEl.classList.add('active');
+  buildDots();
+  await sleep(500);
+  showSlide(0);
+}
+
+// ---------- ТОЧКИ ----------
+function buildDots() {
+  dotsEl.innerHTML = '';
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    dotsEl.appendChild(d);
+  });
+}
+function updateDots() {
+  [...dotsEl.children].forEach((d, i) =>
+    d.classList.toggle('active', i === currentSlide)
+  );
+}
+
+// ---------- СЛАЙД ----------
+async function showSlide(index) {
+  locked = true;
+  hintEl.classList.remove('active');
+
+  const slide = slides[index];
+
+  finalEl.classList.remove('show');
+  imageEl.classList.remove('show');
+
+  await sleep(100);
+  imageEl.style.display = 'none';
+  imageEl.removeAttribute('src');
+  textEl.innerHTML = '';
+
+  await sleep(400);
+
+  if (slide.img) {
+    imageEl.onload = () => {
+      console.log('✅ Картинка загружена:', slide.img);
+      imageEl.style.display = 'block';
+    };
+    imageEl.onerror = () => {
+      console.log('❌ Картинка НЕ найдена:', slide.img);
+      imageEl.style.display = 'none';
+    };
+    imageEl.src = slide.img;
+  }
+
+  await typeText(slide.text);
+
+  if (slide.img && imageEl.style.display !== 'none') {
+    await sleep(200);
+    imageEl.classList.add('show');
+  }
+
+  if (slide.final) {
+    await sleep(300);
+    finalEl.classList.add('show');
+    startTimer();
+  }
+
+  updateDots();
+  await sleep(300);
+  hintEl.classList.add('active');
+  locked = false;
+}
+
+// ---------- ПЕЧАТЬ ----------
+async function typeText(str) {
+  const chars = [...str];
+  const spans = [];
+  for (const ch of chars) {
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = ch;
+    textEl.appendChild(span);
+    spans.push(span);
+  }
+  for (let i = 0; i < spans.length; i++) {
+    spans[i].classList.add('show');
+    if (spans[i].textContent.trim() !== '') playCharSound();
+    await sleep(CHAR_DELAY);
+  }
+}
+
+// ---------- ПЕРЕКЛЮЧЕНИЕ ----------
+function next() {
+  if (locked) return;
+  if (currentSlide < slides.length - 1) {
+    currentSlide++;
+    showSlide(currentSlide);
+  }
+}
+
+document.body.addEventListener('click', (e) => {
+  if (e.target.closest('#startBtn')) return;
+  if (e.target.closest('#final')) return;
+  if (e.target.closest('.rocket') || e.target.closest('.spark')) return;
+  next();
+});
+document.body.addEventListener('touchend', (e) => {
+  if (e.target.closest('#startBtn')) return;
+  if (e.target.closest('#final')) return;
+  if (e.target.closest('.rocket') || e.target.closest('.spark')) return;
+  e.preventDefault();
+  next();
+}, { passive: false });
+
+// ---------- КОНФЕТТИ ----------
+function confettiBurst(count = 40, originX = null, originY = null) {
+  const colors = ['#7ec8ff','#4a90e2','#ffffff','#a8d8ff','#ffd1e8','#fff3b0','#ff6b9d','#ffaa5c'];
+  const cx = (originX ?? window.innerWidth / 2);
+  const cy = (originY ?? window.innerHeight / 2);
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.left = cx + 'px';
+    c.style.top  = cy + 'px';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    document.body.appendChild(c);
+    const angle = Math.random() * Math.PI * 2;
+    const dist  = 80 + Math.random() * 220;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist + 180;
+    const rot = Math.random() * 720 - 360;
+    const dur = 1.6 + Math.random() * 1.2;
+    c.animate([
+      { transform: `translate(-50%,-50%) rotate(0deg)`, opacity: 1 },
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${rot}deg)`, opacity: 0 }
+    ], { duration: dur * 1000, easing: 'cubic-bezier(0.2,0.6,0.4,1)' });
+    setTimeout(() => c.remove(), dur * 1000 + 100);
+  }
+}
+
+// ---------- САЛЮТ ----------
+function launchRocket(startX) {
+  const rocket = document.createElement('div');
+  rocket.className = 'rocket';
+  const startY = window.innerHeight;
+  rocket.style.left = startX + 'px';
+  rocket.style.top = startY + 'px';
+  document.body.appendChild(rocket);
+  const targetY = 100 + Math.random() * (window.innerHeight * 0.4);
+  const dur = 800 + Math.random() * 400;
+  const anim = rocket.animate([
+    { transform: 'translate(-50%, 0)', opacity: 1 },
+    { transform: `translate(-50%, ${targetY - startY}px)`, opacity: 1 }
+  ], { duration: dur, easing: 'cubic-bezier(0.3,0,0.5,1)', fill: 'forwards' });
+  anim.onfinish = () => { rocket.remove(); explode(startX, targetY); };
+}
+
+function explode(x, y) {
+  const colors = ['#7ec8ff','#4a90e2','#ffffff','#a8d8ff','#ffd1e8','#fff3b0','#ff6b9d','#ffaa5c','#a8e6cf'];
+  const color1 = colors[Math.floor(Math.random()*colors.length)];
+  const color2 = colors[Math.floor(Math.random()*colors.length)];
+  const count = 40 + Math.floor(Math.random() * 25);
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('div');
+    s.className = 'spark';
+    s.style.background = Math.random() > 0.5 ? color1 : color2;
+    s.style.left = x + 'px';
+    s.style.top  = y + 'px';
+    s.style.boxShadow = `0 0 10px ${color1}, 0 0 20px ${color2}`;
+    document.body.appendChild(s);
+    const angle = (i / count) * Math.PI * 2 + Math.random() * 0.2;
+    const dist  = 80 + Math.random() * 160;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist;
+    const dur = 1000 + Math.random() * 800;
+    s.animate([
+      { transform: 'translate(-50%,-50%) scale(1.2)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0)`, opacity: 0 }
+    ], { duration: dur, easing: 'cubic-bezier(0.15,0.7,0.3,1)' });
+    setTimeout(() => s.remove(), dur + 100);
+  }
+  confettiBurst(20, x, y);
+}
+
+function fullFireworks() {
+  const positions = [0.2, 0.35, 0.5, 0.65, 0.8];
+  positions.forEach((p, i) => {
+    setTimeout(() => launchRocket(window.innerWidth * p), i * 220);
+  });
+  setTimeout(() => {
+    launchRocket(window.innerWidth * 0.3);
+    launchRocket(window.innerWidth * 0.7);
+  }, 1400);
+}
+
+document.getElementById('fireworksBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  fullFireworks();
+});
+
+// ---------- ТАЙМЕР ----------
+function startTimer() {
+  const now = new Date();
+  let year = now.getFullYear();
+  let target = new Date(year, BDAY_MONTH, BDAY_DAY, 0, 0, 0);
+  if (target < now) target = new Date(year + 1, BDAY_MONTH, BDAY_DAY, 0, 0, 0);
+  const diff = target - now;
+  const days  = Math.floor(diff / (1000*60*60*24));
+  const hours = Math.floor((diff / (1000*60*60)) % 24);
+  const mins  = Math.floor((diff / (1000*60)) % 60);
+  if (days === 0 && hours === 0) {
+    timerEl.textContent = `🎉 Сегодня ДР! С праздником, Юль! 🎂`;
+  } else if (days === 0) {
+    timerEl.textContent = `🎂 Уже сегодня! Осталось ${hours} ч ${mins} мин`;
+  } else {
+    timerEl.textContent = `⏳ До ДР (27 сентября): ${days} д ${hours} ч ${mins} мин`;
+  }
+  setTimeout(startTimer, 60000);
+}
+
+// ================================================================
+//   СТАРТ — КЛИК ПО КНОПКЕ = МУЗЫКА СРАЗУ ИГРАЕТ
+// ================================================================
+startBtn.addEventListener('click', async () => {
+  // 1) Инициализация аудио-контекста (нужно для Web Audio)
+  initAudio();
+
+  // 2) Запускаем музыку СРАЗУ
+  music.volume = MUSIC_VOLUME;
+  try {
+    await music.play();
+    console.log('✅ Музыка играет');
+  } catch (e) {
+    console.log('⚠️ Музыка не заиграла:', e.message);
+  }
+
+  // 3) Подключаем визуализатор
+  setupRealVisualizer();
+  startVisualizer();
+
+  // 4) Прячем кнопку и запускаем интро
+  startBtn.classList.add('hide');
+  setTimeout(() => { startBtn.style.display = 'none'; }, 800);
+
+  runIntro();
+});
+</script>
+</body>
+</html>
